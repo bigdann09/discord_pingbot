@@ -28,7 +28,7 @@ func Connect(dsn string) (*Database, error) {
 	return &Database{DB: db}, err
 }
 
-// findServerByID retrieves a server by its ID from the database.
+// findAllServers retrieves a server by its ID from the database.
 func (db Database) FindAllServers() ([]Server, error) {
 	var servers []Server
 	result := db.DB.Table("servers").Scan(&servers)
