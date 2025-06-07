@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -16,8 +17,29 @@ func Load() (*Config, error) {
 	// load environment configs
 	err := godotenv.Load()
 
+	user := os.Getenv("POSTGRES_USER")
+	pass := os.Getenv("POSTGRES_PASS")
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	db := os.Getenv("POSTGRES_DB")
+
+	// check if variables are empty
+	if user == "" || pass == "" || host == "" || port == "" || db == "" {
+		return &Config{}, fmt.Errorf("database credentials are required")
+	}
+
+	// build dsn from variables
+	dsn := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?ssl=disable",
+		user,
+		pass,
+		host,
+		port,
+		db,
+	)
+
 	return &Config{
-		DatabaseURL:      os.Getenv("DATABASE_URL"),
+		DatabaseURL:      dsn,
 		DiscordToken:     os.Getenv("DISCORD_TOKEN"),
 		DiscordChannelID: os.Getenv("DISCORD_CHANNEL_ID"),
 	}, err
