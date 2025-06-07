@@ -18,7 +18,7 @@ func Load() (*Config, error) {
 	err := godotenv.Load()
 
 	user := os.Getenv("POSTGRES_USER")
-	pass := os.Getenv("POSTGRES_PASS")
+	pass := os.Getenv("POSTGRES_PASSWORD")
 	host := os.Getenv("POSTGRES_HOST")
 	port := os.Getenv("POSTGRES_PORT")
 	db := os.Getenv("POSTGRES_DB")
@@ -28,9 +28,9 @@ func Load() (*Config, error) {
 		return &Config{}, fmt.Errorf("database credentials are required")
 	}
 
-	// build dsn from variables
+	// built dsn from variables
 	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?ssl=disable",
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		user,
 		pass,
 		host,
