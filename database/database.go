@@ -27,3 +27,13 @@ func Connect(dsn string) (*Database, error) {
 	db.AutoMigrate(&Server{}) // auto-migrate to database
 	return &Database{DB: db}, err
 }
+
+// findServerByID retrieves a server by its ID from the database.
+func (db Database) FindAllServers() ([]Server, error) {
+	var servers []Server
+	result := db.DB.Table("servers").Scan(&servers)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return servers, nil
+}
