@@ -101,6 +101,34 @@ func (bot *Bot) Run() {
 	<-c
 }
 
+// run service to monitor hostnames in database
+func (bot *Bot) Monitor() {
+	if bot.session == nil {
+		log.Fatal("discord session is not initialized")
+	}
+
+	go func() {
+		ticker := time.NewTicker(4 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			servers, err := bot.db.FindAllServers()
+			if err != nil {
+				log.Fatal("failed to fetch servers from database:", err)
+			}
+			for _, server := range servers {
+				log.Printf("Monitoring server: %s\n", server.Hostname)
+				err := bot.monitor(server.Hostname)
+				if err != nil {
+					bot.session.ChannelMessageSend(bot.channelID, fmt.Sprintf("⚠️ %s is down or Invalid host!", server.Hostname))
+				} else {
+					bot.session.ChannelMessageSend(bot.channelID, fmt.Sprintf("✅ %s is up 🌐\n", server.Hostname))
+				}
+			}
+		}
+	}()
+}
+
 // monitor hostname
 func (bot *Bot) monitor(hostname string) error {
 	if _, err := net.LookupHost(hostname); err != nil {

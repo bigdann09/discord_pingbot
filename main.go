@@ -28,5 +28,6 @@ func main() {
 
 	// start the bot
 	log.Println("Starting the Discord bot...")
+	discordBot.Monitor()
 	discordBot.Run()
 }
