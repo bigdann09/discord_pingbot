@@ -37,12 +37,15 @@ Use the generated URL to invite the bot to your server.
 Enable Developer Mode in Discord (User Settings > Appearance > Developer Mode), right-click the command channel and alert channel, and copy their IDs.
 
 
-4. ### Configure environment variables:Create a .env file in the project root:
+4. ### Configure environment variables: Create a .env file in the project root:
 ```bash
-DISCORD_TOKEN=your-discord-bot-token
-DISCORD_CHANNEL_ID=your-command-channel-id
-DISCORD_ALERT_CHANNEL_ID=your-alert-channel-id
-POSTGRES_DSN=host=postgres port=5432 user=postgres password=your-password dbname=pingbot sslmode=disable
+DISCORD_TOKEN="YOUR_DISCORD_BOT_TOKEN"
+DISCORD_CHANNEL_ID="YOUR_DISCORD_CHANNEL_ID"
+POSTGRES_HOST="YOUR_POSTGRES_HOST"
+POSTGRES_PORT="YOUR_POSTGRES_PORT"
+POSTGRES_USER="YOUR_POSTGRES"
+POSTGRES_PASSWORD="YOUR_POSTGRES_PASSWORD"
+POSTGRES_DB="YOUR_POSTGRES_DB"
 ```
 
 5. ### Set up Docker:
