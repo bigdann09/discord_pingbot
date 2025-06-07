@@ -73,12 +73,47 @@ func (bot *Bot) Run() {
 			log.Printf("Server %s added successfully.\n", hostname)
 			bot.session.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Server %s added successfully.", "hostname"))
 
+		} else if strings.Contains(m.Content, "!status") {
+
+			// Extract the hostname from the message
+			content := strings.Split(m.Content, " ")
+			if len(content) < 2 {
+				bot.session.ChannelMessageSend(m.ChannelID, "Please provide a hostname to check status. Usage: `!status <hostname>`")
+				return
+			}
+
+			hostname := content[1]
+			fmt.Println("Checking status for server:", hostname)
+			if err := bot.monitor(hostname); err != nil {
+				log.Printf("Server %s is down or invalid host: %v\n", hostname, err)
+				bot.session.ChannelMessageSend(m.ChannelID, fmt.Sprintf("⚠️ %s is down or invalid host: %v", hostname, err))
+				return
+			}
+
+			log.Printf("Server %s is reachable.\n", hostname)
+			bot.session.ChannelMessageSend(m.ChannelID, fmt.Sprintf("✅ %s is up 🌐\n", hostname))
+
 		}
 	})
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
+}
+
+// monitor hostname
+func (bot *Bot) monitor(hostname string) error {
+	if _, err := net.LookupHost(hostname); err != nil {
+		fmt.Println("DNS lookup failed:", err)
+		return fmt.Errorf("dns server is not reachable for %s. please check your dns settings. %v", hostname, err)
+	}
+
+	// Check if the database is reachable
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%s:80", hostname), 5*time.Second)
+	if err != nil {
+		return fmt.Errorf("server %s is not reachable: %v", hostname, err)
+	}
+	return err
 }
 
 // add hostname to database
