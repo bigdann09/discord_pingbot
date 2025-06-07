@@ -37,3 +37,22 @@ func (db Database) FindAllServers() ([]Server, error) {
 	}
 	return servers, nil
 }
+
+// addServer adds a new server to the database.
+func (db Database) AddServer(hostname string) error {
+	if db.Exists(hostname) {
+		return fmt.Errorf("record %s already saved", hostname)
+	}
+
+	result := db.DB.Table("servers").Create(&Server{Hostname: hostname})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (db Database) Exists(hostname string) bool {
+	var exists bool
+	db.DB.Raw("select exists (select 1 from servers where hostname = ?)", hostname).Scan(&exists)
+	return exists
+}
