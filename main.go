@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"pingbot/bot"
 	"pingbot/config"
 	"pingbot/database"
 )
@@ -20,5 +20,13 @@ func main() {
 		log.Fatal("failed to connect to database", err)
 	}
 
-	fmt.Println(db)
+	// connect to discord bot
+	discordBot, err := bot.New(cfg.DiscordToken, cfg.DiscordChannelID, db)
+	if err != nil {
+		panic(err)
+	}
+
+	// start the bot
+	log.Println("Starting the Discord bot...")
+	discordBot.Run()
 }
